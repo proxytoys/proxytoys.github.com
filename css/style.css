@@ -1,0 +1,391 @@
+/*
+ * (c) 2005, 2009, 2010 ThoughtWorks Ltd
+ * All rights reserved.
+ *
+ * The software in this package is published under the terms of the BSD
+ * style license a copy of which has been included with this distribution in
+ * the LICENSE.txt file.
+ * 
+ * Created on 07-Jun-2005
+ */
+
+/*---------------------------------------------------------------------------
+ *  Two- and three-column layout
+ */
+
+#banner {
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    height: 122px;
+}
+
+#left {
+    position: absolute;
+    z-index: 2;
+    left: 8px;
+    width: 184px;
+    top: 130px;
+    bottom: 8px;
+    margin: 0px;
+    padding: 0px;
+}
+
+#right {
+    position: absolute;
+    z-index: 1;
+    right: 8px;
+    width: 184px;
+    top: 130px;
+    bottom: 8px;
+    margin: 0px;
+    padding: 0px;
+}
+
+.Content3Column {
+    position: absolute;
+    top: 130px;
+    bottom: 8px;
+    left: 208px;
+    right: 216px;
+}
+
+.Content2Column {
+    position: absolute;
+    top: 130px;
+    bottom: 8px;
+    left: 208px;
+    right: 16px;
+}
+
+#center {
+    z-index: 3;
+    margin: 0px;
+    border: none;
+    padding-bottom: 8px;
+}
+
+
+/*---------------------------------------------------------------------------
+ *  Default element styles
+ */
+
+body {
+    padding: 0px;
+    margin: 0px;
+    border: 0px;
+
+    font-family: helvetica, arial, sans-serif;
+    font-size: 12px;
+
+    background-color: white;
+    color: black;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    margin: 0px;
+    border: 0px;
+    padding: 0px;
+    font-weight: normal;
+}
+
+hr {
+    border: 1px solid #ff4040;
+}
+
+a:link { color: #2BA527; }
+a:visited { color: #649BD1; }
+a:active { color: #ff4040; }
+a:hover { color: #ff4040; }
+
+iframe {
+    width:100%;
+    height: 800px;
+    border: 0px;
+}
+
+img {
+    border: 0px;
+    padding: 0px;
+    margin: 0px;
+}
+
+p {
+    border: 0px;
+    padding: 0px;
+    margin: 0px;
+    margin-bottom: 10px;
+}
+
+blockquote {
+    margin-bottom: 10px;
+}
+
+td {
+    font-size: 12px;
+    padding: 2px;
+}
+
+th {
+    font-size: 12px;
+    font-weight: bold;
+    white-space: nowrap;
+    padding: 2px;
+}
+
+th.Row {
+    text-align: left;
+    vertical-align: top;
+}
+
+ul, ol {
+    border: 0px;
+    padding: 0px;
+    margin-top: 0px;
+    margin-bottom: 12px;
+    margin-left: 20px;
+}
+
+#content h1[id]:hover:after, #content h2[id]:hover:after {
+    content: " #" attr(id) " ";
+    font-size: 90%;
+    color: #ff4040;
+    text-decoration: none;
+}
+
+
+/*---------------------------------------------------------------------------
+ *  Page banner
+ */
+
+#banner {
+    margin: 0px;
+    border: 0px;
+    border-bottom: 2px solid #ff4040;
+    padding: 0px;
+    background-color: #ffee77;
+    color: black;
+    vertical-align: bottom;
+//    background-image: url(wood.jpg);
+}
+
+#banner a { text-decoration: none; }
+#banner a:visited { color: #649BD1; }
+#banner a:hover { color: #ff4040; }
+#banner a:active { color: #ff4040; }
+
+#logo {
+    position: absolute;
+    top: 5px;
+    left: 8px;
+}
+
+#title {
+    position: absolute;
+    top: 25px;
+    left: 204px;
+    font-size: 48px;
+    font-weight: bold;
+    color: #ff4040;
+}
+
+/*---------------------------------------------------------------------------
+ *  Page content
+ */
+
+#content {
+    margin: 0px;
+    background-color: white;
+    color: black;
+}
+
+#content h1 {
+    width: 100%;
+    font-size: 18px;
+    background-color: #2BA527;
+    color: #ffee77;
+    padding: 2px;
+    padding-left: 6px;
+    margin-top: 24px;
+    margin-bottom: 12px;
+    border: 2px solid #ff4040;
+}
+
+#content .FirstChild {  /* IE doesn't understand first-child pseudoelement */
+    margin-top: 0px;
+}
+
+#content .headerRow {
+    padding-left: 4px;
+    padding-right: 16px;
+}
+
+#content a { text-decoration: underline; }
+#content a:link { color: #2BA527; }
+#content a:visited { color: #649BD1; }
+#content a:active { color: #ff4040; }
+#content a:hover { color: #ff4040; }
+
+#content h2 {
+    margin-top: 24px;
+    border: 2px solid #ff4040;
+    margin-bottom: 16px;
+    font-size: 15px;
+    font-weight: bold;
+    background-color: #649BD1;
+    color: #ffee77;
+    padding: 2px;
+}
+
+#content li {
+    margin-bottom: 6px;
+}
+
+#content table {
+    background-color: #ff4040;
+}
+
+#content th {
+    color: #ffee77;
+    background-color: #649BD1;
+}
+
+#content td {
+    background-color: #ffee77;
+}
+
+.Source pre {
+    padding: 4px;
+    font-family: courier new, monospace;
+    font-size: 11px;
+    border: 2px solid #ff4040;
+    background-color: #ffee77;
+    color: black;
+}
+
+.Source:before {
+    margin: 0px;
+    padding: 0px;
+    border: 0px;
+    font-size: inherit;
+    line-spacing: 100%;
+}
+
+.highlight {
+    background-color: #ffee77;
+    border: 2px dotted #ff4040;
+    padding: 5px;
+}
+
+/* The following are for images, but can also apply to div's containing images. */
+
+#content .Float {
+    float: right;
+    margin-left: 8px;
+    margin-right: 0px;
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
+
+#content .Diagram {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
+
+#content .Inline {
+    display: inline;
+}
+
+.RuleOfThumb {
+    font-weight: bold;
+}
+
+/* JUnit report */
+
+.Error {
+  font-weight:bold; color:red;
+}
+
+.Failure {
+  font-weight:bold; color:purple;
+}
+
+/*---------------------------------------------------------------------------
+ *  Side panels
+ */
+
+.SidePanel {
+    background-color: white;
+    padding: 0px;
+    font-size: 11px;
+}
+
+.SidePanel h1 {
+    margin: 0px;
+    border: 0px;
+    padding: 4px;
+
+    color: #2BA527;
+
+    font-size: 12px;
+    font-weight: bold;
+}
+
+
+.SidePanel a { text-decoration: none; }
+.SidePanel a:link { color: #2BA527; }
+.SidePanel a:visited { color: #649BD1; }
+.SidePanel a:active { color: #ff4040; }
+.SidePanel a:hover { color: #ff4040; }
+
+/*---------------------------------------------------------------------------
+ *  Menus
+ */
+
+.MenuGroup {
+    border: 2px solid #ff4040;
+
+    margin-bottom: 8px;
+    background-color: #ffee77;
+    color: #649BD1;
+}
+
+.MenuGroup ul {
+    margin: 0px;
+    padding-left: 4px;
+    list-style-type: none;
+}
+
+.MenuGroup li {
+    padding: 2px;
+}
+
+.MenuGroup .currentLink {
+    background-color: #ffee77;
+    color: #ff4040;
+}
+
+
+/*---------------------------------------------------------------------------
+ *  News panel
+ */
+
+.NewsGroup {
+    border: 2px solid #ff4040;
+
+    margin-bottom: 8px;
+    background-color: #ffee77;
+    color: #649BD1;
+}
+
+.NewsItem {
+    margin: 4px;
+}
+
+.NewsVersion {
+	position: absolute;
+	left: 80px;
+}

@@ -1,0 +1,55 @@
+---
+layout: default
+name: Proxy Factories and Common Usage Patterns
+---
+
+    <h1 id="Motivation">Motivation</h1>
+
+    <p>Have you ever developed code that uses java.lang.reflect.Proxy and thought:<br>
+    <br>
+    <cite>"That CGLIB library sure is cool. I wish I could leverage both standard proxies and
+    CGLIB proxies without changing my code".</cite><br>
+    <br>
+    With ProxyToys you can! ProxyToys is to proxy generation what Jakarta Commons Logging is to logging
+    - an thin implementation neutral API for Proxy creation. Whether to use standard proxies or CGLIB is a
+    one-line code change.
+    </p>
+
+    <h1 id="Features">Features</h1>
+
+    <p>API Compatible proxy factory providers:</p>
+    <ul>
+        <li>Standard proxies of the JDK</li>
+        <li>CGLIB implementation</li>
+    </ul>
+
+    <p>ProxyToys provides a collection of toys acting as factories for creating "special" proxies such as:</p>
+    <ul>
+        <li>Decorators - for simple AOP-like chained method interception</li>
+        <li>Delegates - for method invocation on a delegate object, that might have different type</li>
+        <li>Dispatcher proxy - single proxy instance dispatching method calls to different object with separate types</li>
+        <li>Echo proxy - for tracing method calls</li>
+        <li>Failover objects - fails over to a next object in case of exception</li>
+        <li>Future objects - execute method calls asynchronously</li>
+        <li>Hot swapping proxy - allows implementation hiding that can be swapped, and mutual dependencies</li>
+        <li>Multicasting objects - for multicasting a method invocation to multiple objects</li>
+        <li>Null objects - for default implementations of classes that do nothing at all</li>
+        <li>Pool - for a pool implementation with proxied objects that return automatically to the pool</li>
+        <li>Privilege - execute method calls as privileged actions in a controlled environment</li>
+    </ul>
+
+    <h1 id="Dependencies">Dependencies</h1>
+
+    <p>ProxyToys is a compact library. If you choose not to use the CGLIB features it requires
+    no additional libraries.</p>
+
+    <h1 id="Limitations">Known Limitations</h1>
+
+    <p>ProxyToys is bound to the limitations of the underlying Proxy implementation.</p>
+
+    <h1 id="Getting_started">Getting Started</h1>
+
+    <ul>
+      <li><a href="download.html">Download it</a>.</li>
+      <li><a href="tutorial.html">Use it</a>.</li>
+    </ul>
