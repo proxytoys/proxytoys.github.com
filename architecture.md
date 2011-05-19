@@ -1,0 +1,48 @@
+---
+layout: default
+name: Components
+---
+
+Components
+==========
+
+ProxyToys consists of two main components:
+
+* Proxy Factories
+* Toy Factories
+        
+The Proxy Factories provide an independent way to create general proxy instances. The toys
+are factories for common problems solved with proxies (and themselves use Proxy Factories).
+
+Proxy Factories
+===============
+
+Whenever you have a need to create a dynamic proxy, you may use an implementation of the
+[ProxyFactory](apidocs/com/thoughtworks/proxy/ProxyFactory.html) instead depending
+directly on the proxy provided by the reflection API of the JDK.
+
+ProxyToys comes with two implementations of such a factory, one based on the reflection API
+of the JDK itself and the other one based on CGLIB. Each implementation has its own limitations and
+you might switch the proxy factory depending on the runtime environment as explained in the
+[FAQ](faq.html#Compatibility_CGLIB)
+
+<p class="highlight">Always depend on [ProxyFactory](apidocs/com/thoughtworks/proxy/ProxyFactory.html) and select the
+implementation of your choice.</p>
+
+Other bytecode manipulation libraries may be used to implement alternative ProxyFactory
+implementations as long as they can support or be used to build a compatible
+[invoker interface](apidocs/com/thoughtworks/proxy/Invoker.html)
+
+Toys
+====
+
+The toys exist as solutions for common problems solved with proxy instances. Some are build on
+top of another and you may derive your own specialized solution based on a available toy implementation.
+Each toy has a builder as proxy factory, that can be invoked to create a proxy for a single or for multiple
+types with a special assignment. the [Pool](apidocs/com/thoughtworks/proxy/toys/pool/Pool.html)
+supports additionally normal constructors, because it is a normal object <em>using</em> proxies.
+
+Each toys utilizes a special implementation of an 
+[Invoker](apidocs/com/thoughtworks/proxy/Invoker.html), that is called for each method 
+invocation. In most toy implementations each proxy has its own Invoker instance. For very specialized
+proxies, you might use a different strategy though.
