@@ -1,0 +1,120 @@
+<HTML>
+<BODY BGCOLOR="white">
+<PRE>
+<FONT color="green">001</FONT>    /*<a name="line.1"></a>
+<FONT color="green">002</FONT>     * (c) 2003-2005, 2009, 2010 ThoughtWorks Ltd<a name="line.2"></a>
+<FONT color="green">003</FONT>     * All rights reserved.<a name="line.3"></a>
+<FONT color="green">004</FONT>     *<a name="line.4"></a>
+<FONT color="green">005</FONT>     * The software in this package is published under the terms of the BSD<a name="line.5"></a>
+<FONT color="green">006</FONT>     * style license a copy of which has been included with this distribution in<a name="line.6"></a>
+<FONT color="green">007</FONT>     * the LICENSE.txt file.<a name="line.7"></a>
+<FONT color="green">008</FONT>     * <a name="line.8"></a>
+<FONT color="green">009</FONT>     * Created on 23-May-2004<a name="line.9"></a>
+<FONT color="green">010</FONT>     */<a name="line.10"></a>
+<FONT color="green">011</FONT>    package com.thoughtworks.proxy.kit;<a name="line.11"></a>
+<FONT color="green">012</FONT>    <a name="line.12"></a>
+<FONT color="green">013</FONT>    import java.lang.reflect.Method;<a name="line.13"></a>
+<FONT color="green">014</FONT>    <a name="line.14"></a>
+<FONT color="green">015</FONT>    import com.thoughtworks.proxy.Invoker;<a name="line.15"></a>
+<FONT color="green">016</FONT>    <a name="line.16"></a>
+<FONT color="green">017</FONT>    <a name="line.17"></a>
+<FONT color="green">018</FONT>    /**<a name="line.18"></a>
+<FONT color="green">019</FONT>     * A simple {@link Invoker} implementation, that routes any call to a target object. A &lt;code&gt;null&lt;/code&gt; value as<a name="line.19"></a>
+<FONT color="green">020</FONT>     * target can be handled, the invocation result will always be &lt;code&gt;null&lt;/code&gt;.<a name="line.20"></a>
+<FONT color="green">021</FONT>     *<a name="line.21"></a>
+<FONT color="green">022</FONT>     * @author Aslak Helles&amp;oslash;y<a name="line.22"></a>
+<FONT color="green">023</FONT>     * @since 0.2<a name="line.23"></a>
+<FONT color="green">024</FONT>     */<a name="line.24"></a>
+<FONT color="green">025</FONT>    public class SimpleInvoker implements Invoker {<a name="line.25"></a>
+<FONT color="green">026</FONT>    <a name="line.26"></a>
+<FONT color="green">027</FONT>        private static final long serialVersionUID = 1L;<a name="line.27"></a>
+<FONT color="green">028</FONT>    <a name="line.28"></a>
+<FONT color="green">029</FONT>        private Object target;<a name="line.29"></a>
+<FONT color="green">030</FONT>    <a name="line.30"></a>
+<FONT color="green">031</FONT>        /**<a name="line.31"></a>
+<FONT color="green">032</FONT>         * Construct a SimpleInvoker.<a name="line.32"></a>
+<FONT color="green">033</FONT>         *<a name="line.33"></a>
+<FONT color="green">034</FONT>         * @param target the invocation target.<a name="line.34"></a>
+<FONT color="green">035</FONT>         * @since 0.2<a name="line.35"></a>
+<FONT color="green">036</FONT>         */<a name="line.36"></a>
+<FONT color="green">037</FONT>        public SimpleInvoker(final Object target) {<a name="line.37"></a>
+<FONT color="green">038</FONT>            this.target = target;<a name="line.38"></a>
+<FONT color="green">039</FONT>        }<a name="line.39"></a>
+<FONT color="green">040</FONT>    <a name="line.40"></a>
+<FONT color="green">041</FONT>        public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {<a name="line.41"></a>
+<FONT color="green">042</FONT>            return (target == null ? null : method.invoke(target, args));<a name="line.42"></a>
+<FONT color="green">043</FONT>        }<a name="line.43"></a>
+<FONT color="green">044</FONT>    <a name="line.44"></a>
+<FONT color="green">045</FONT>        /**<a name="line.45"></a>
+<FONT color="green">046</FONT>         * Retrieve the target of the invocations.<a name="line.46"></a>
+<FONT color="green">047</FONT>         *<a name="line.47"></a>
+<FONT color="green">048</FONT>         * @return the target object<a name="line.48"></a>
+<FONT color="green">049</FONT>         * @since 0.2<a name="line.49"></a>
+<FONT color="green">050</FONT>         */<a name="line.50"></a>
+<FONT color="green">051</FONT>        protected Object getTarget() {<a name="line.51"></a>
+<FONT color="green">052</FONT>            return target;<a name="line.52"></a>
+<FONT color="green">053</FONT>        }<a name="line.53"></a>
+<FONT color="green">054</FONT>    }<a name="line.54"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</PRE>
+</BODY>
+</HTML>

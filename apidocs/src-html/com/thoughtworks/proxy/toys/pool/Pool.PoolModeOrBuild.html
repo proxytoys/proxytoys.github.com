@@ -1,0 +1,523 @@
+<HTML>
+<BODY BGCOLOR="white">
+<PRE>
+<FONT color="green">001</FONT>    /*<a name="line.1"></a>
+<FONT color="green">002</FONT>     * (c) 2004, 2005, 2009, 2010 ThoughtWorks Ltd<a name="line.2"></a>
+<FONT color="green">003</FONT>     * All rights reserved.<a name="line.3"></a>
+<FONT color="green">004</FONT>     *<a name="line.4"></a>
+<FONT color="green">005</FONT>     * The software in this package is published under the terms of the BSD<a name="line.5"></a>
+<FONT color="green">006</FONT>     * style license a copy of which has been included with this distribution in<a name="line.6"></a>
+<FONT color="green">007</FONT>     * the LICENSE.txt file.<a name="line.7"></a>
+<FONT color="green">008</FONT>     * <a name="line.8"></a>
+<FONT color="green">009</FONT>     * Created on 01-Jul-2004<a name="line.9"></a>
+<FONT color="green">010</FONT>     */<a name="line.10"></a>
+<FONT color="green">011</FONT>    package com.thoughtworks.proxy.toys.pool;<a name="line.11"></a>
+<FONT color="green">012</FONT>    <a name="line.12"></a>
+<FONT color="green">013</FONT>    import java.io.ByteArrayOutputStream;<a name="line.13"></a>
+<FONT color="green">014</FONT>    import java.io.IOException;<a name="line.14"></a>
+<FONT color="green">015</FONT>    import java.io.NotSerializableException;<a name="line.15"></a>
+<FONT color="green">016</FONT>    import java.io.ObjectInputStream;<a name="line.16"></a>
+<FONT color="green">017</FONT>    import java.io.ObjectOutputStream;<a name="line.17"></a>
+<FONT color="green">018</FONT>    import java.io.Serializable;<a name="line.18"></a>
+<FONT color="green">019</FONT>    import java.lang.ref.WeakReference;<a name="line.19"></a>
+<FONT color="green">020</FONT>    import java.lang.reflect.Method;<a name="line.20"></a>
+<FONT color="green">021</FONT>    import java.util.ArrayList;<a name="line.21"></a>
+<FONT color="green">022</FONT>    import java.util.HashMap;<a name="line.22"></a>
+<FONT color="green">023</FONT>    import java.util.Iterator;<a name="line.23"></a>
+<FONT color="green">024</FONT>    import java.util.List;<a name="line.24"></a>
+<FONT color="green">025</FONT>    import java.util.Map;<a name="line.25"></a>
+<FONT color="green">026</FONT>    <a name="line.26"></a>
+<FONT color="green">027</FONT>    import com.thoughtworks.proxy.ProxyFactory;<a name="line.27"></a>
+<FONT color="green">028</FONT>    import com.thoughtworks.proxy.factory.InvokerReference;<a name="line.28"></a>
+<FONT color="green">029</FONT>    import com.thoughtworks.proxy.factory.StandardProxyFactory;<a name="line.29"></a>
+<FONT color="green">030</FONT>    import com.thoughtworks.proxy.kit.NoOperationResetter;<a name="line.30"></a>
+<FONT color="green">031</FONT>    import com.thoughtworks.proxy.kit.ObjectReference;<a name="line.31"></a>
+<FONT color="green">032</FONT>    import com.thoughtworks.proxy.kit.Resetter;<a name="line.32"></a>
+<FONT color="green">033</FONT>    import com.thoughtworks.proxy.kit.SimpleReference;<a name="line.33"></a>
+<FONT color="green">034</FONT>    import com.thoughtworks.proxy.toys.delegate.DelegatingInvoker;<a name="line.34"></a>
+<FONT color="green">035</FONT>    import com.thoughtworks.proxy.toys.delegate.DelegationMode;<a name="line.35"></a>
+<FONT color="green">036</FONT>    <a name="line.36"></a>
+<FONT color="green">037</FONT>    /**<a name="line.37"></a>
+<FONT color="green">038</FONT>     * A simple pool implementation that collects its unused components of a specific type automatically.<a name="line.38"></a>
+<FONT color="green">039</FONT>     * &lt;p&gt;<a name="line.39"></a>
+<FONT color="green">040</FONT>     * The pool will only manage instances that were explicitly passed into the pool before. For more sophisticated pooling<a name="line.40"></a>
+<FONT color="green">041</FONT>     * strategies, derive from this class or wrap it.<a name="line.41"></a>
+<FONT color="green">042</FONT>     * &lt;/p&gt;<a name="line.42"></a>
+<FONT color="green">043</FONT>     * &lt;p&gt;<a name="line.43"></a>
+<FONT color="green">044</FONT>     * The implementation will provide these instances wrapped by a proxy, that will return the instance automatically to<a name="line.44"></a>
+<FONT color="green">045</FONT>     * the pool, if it falls out of scope and is collected by the garbage collector. Since the pool only returns instances<a name="line.45"></a>
+<FONT color="green">046</FONT>     * wrapped by a proxy that implements the {@link Poolable} interface, this can be used to release the instance manually<a name="line.46"></a>
+<FONT color="green">047</FONT>     * to the pool also. With an implementation of the {@link Resetter} interface each element's status can be reset or the<a name="line.47"></a>
+<FONT color="green">048</FONT>     * element can be dropped from the pool at all, if it is exhausted.<a name="line.48"></a>
+<FONT color="green">049</FONT>     * &lt;/p&gt;<a name="line.49"></a>
+<FONT color="green">050</FONT>     * &lt;p&gt;<a name="line.50"></a>
+<FONT color="green">051</FONT>     * A client can use the pool's monitor for an improved synchronization. Every time an object is returned to the pool, all<a name="line.51"></a>
+<FONT color="green">052</FONT>     * waiting Threads of the monitor will be notified. This notification will happen independently of the result of the<a name="line.52"></a>
+<FONT color="green">053</FONT>     * {@link Resetter#reset(Object)} method.<a name="line.53"></a>
+<FONT color="green">054</FONT>     * &lt;/p&gt;<a name="line.54"></a>
+<FONT color="green">055</FONT>     * &lt;p&gt;<a name="line.55"></a>
+<FONT color="green">056</FONT>     * A Pool instance can be created as usual with a builder, but also using various constructors to support dependency<a name="line.56"></a>
+<FONT color="green">057</FONT>     * injection.<a name="line.57"></a>
+<FONT color="green">058</FONT>     * &lt;/p&gt;<a name="line.58"></a>
+<FONT color="green">059</FONT>     *<a name="line.59"></a>
+<FONT color="green">060</FONT>     * @author J&amp;ouml;rg Schaible<a name="line.60"></a>
+<FONT color="green">061</FONT>     * @author Paul Hammant<a name="line.61"></a>
+<FONT color="green">062</FONT>     * @see com.thoughtworks.proxy.toys.pool<a name="line.62"></a>
+<FONT color="green">063</FONT>     * @since 0.2<a name="line.63"></a>
+<FONT color="green">064</FONT>     */<a name="line.64"></a>
+<FONT color="green">065</FONT>    public class Pool&lt;T&gt; implements Serializable {<a name="line.65"></a>
+<FONT color="green">066</FONT>        private static final long serialVersionUID = 1L;<a name="line.66"></a>
+<FONT color="green">067</FONT>        private static final Method returnInstanceToPool;<a name="line.67"></a>
+<FONT color="green">068</FONT>    <a name="line.68"></a>
+<FONT color="green">069</FONT>        static {<a name="line.69"></a>
+<FONT color="green">070</FONT>            try {<a name="line.70"></a>
+<FONT color="green">071</FONT>                returnInstanceToPool = Poolable.class.getMethod("returnInstanceToPool");<a name="line.71"></a>
+<FONT color="green">072</FONT>            } catch (NoSuchMethodException e) {<a name="line.72"></a>
+<FONT color="green">073</FONT>                throw new ExceptionInInitializerError(e.toString());<a name="line.73"></a>
+<FONT color="green">074</FONT>            }<a name="line.74"></a>
+<FONT color="green">075</FONT>        }<a name="line.75"></a>
+<FONT color="green">076</FONT>    <a name="line.76"></a>
+<FONT color="green">077</FONT>        private Class&lt;?&gt; types[];<a name="line.77"></a>
+<FONT color="green">078</FONT>        private ProxyFactory factory;<a name="line.78"></a>
+<FONT color="green">079</FONT>        private transient Map&lt;T, WeakReference&lt;T&gt;&gt; busyInstances;<a name="line.79"></a>
+<FONT color="green">080</FONT>        private transient List&lt;ObjectReference&lt;T&gt;&gt; availableInstances;<a name="line.80"></a>
+<FONT color="green">081</FONT>        private Resetter&lt;? super T&gt; resetter;<a name="line.81"></a>
+<FONT color="green">082</FONT>        private SerializationMode serializationMode = SerializationMode.STANDARD;<a name="line.82"></a>
+<FONT color="green">083</FONT>    <a name="line.83"></a>
+<FONT color="green">084</FONT>        /**<a name="line.84"></a>
+<FONT color="green">085</FONT>         * Creates a factory for a pool instance which proxy the managed elements in the pool.<a name="line.85"></a>
+<FONT color="green">086</FONT>         * <a name="line.86"></a>
+<FONT color="green">087</FONT>         * @param type the type of the instances<a name="line.87"></a>
+<FONT color="green">088</FONT>         * @return return the pool with parameters specified<a name="line.88"></a>
+<FONT color="green">089</FONT>         * @since 1.0<a name="line.89"></a>
+<FONT color="green">090</FONT>         */<a name="line.90"></a>
+<FONT color="green">091</FONT>        public static &lt;T&gt; PoolResettedBy&lt;T&gt; create(Class&lt;T&gt; type) {<a name="line.91"></a>
+<FONT color="green">092</FONT>            return new PoolResettedBy&lt;T&gt;(new Pool&lt;T&gt;(type, new NoOperationResetter&lt;T&gt;()));<a name="line.92"></a>
+<FONT color="green">093</FONT>        }<a name="line.93"></a>
+<FONT color="green">094</FONT>        <a name="line.94"></a>
+<FONT color="green">095</FONT>        public static class PoolBuild&lt;T&gt; {<a name="line.95"></a>
+<FONT color="green">096</FONT>    <a name="line.96"></a>
+<FONT color="green">097</FONT>            protected Pool&lt;T&gt; pool;<a name="line.97"></a>
+<FONT color="green">098</FONT>    <a name="line.98"></a>
+<FONT color="green">099</FONT>            private PoolBuild(Pool&lt;T&gt; pool) {<a name="line.99"></a>
+<FONT color="green">100</FONT>                this.pool = pool;<a name="line.100"></a>
+<FONT color="green">101</FONT>            }<a name="line.101"></a>
+<FONT color="green">102</FONT>    <a name="line.102"></a>
+<FONT color="green">103</FONT>            /**<a name="line.103"></a>
+<FONT color="green">104</FONT>             * Build the pool using the {@link StandardProxyFactory}.<a name="line.104"></a>
+<FONT color="green">105</FONT>             *<a name="line.105"></a>
+<FONT color="green">106</FONT>             * @return the pool with predefined instances<a name="line.106"></a>
+<FONT color="green">107</FONT>             * @since 1.0<a name="line.107"></a>
+<FONT color="green">108</FONT>             */<a name="line.108"></a>
+<FONT color="green">109</FONT>            public Pool&lt;T&gt; build() {<a name="line.109"></a>
+<FONT color="green">110</FONT>                return build(new StandardProxyFactory());<a name="line.110"></a>
+<FONT color="green">111</FONT>            }<a name="line.111"></a>
+<FONT color="green">112</FONT>    <a name="line.112"></a>
+<FONT color="green">113</FONT>            /**<a name="line.113"></a>
+<FONT color="green">114</FONT>             * Build the pool using a special {@link ProxyFactory}.<a name="line.114"></a>
+<FONT color="green">115</FONT>             *<a name="line.115"></a>
+<FONT color="green">116</FONT>             * @param factory the proxy factory to use<a name="line.116"></a>
+<FONT color="green">117</FONT>             * @return the pool with predefined instances<a name="line.117"></a>
+<FONT color="green">118</FONT>             * @since 0.2<a name="line.118"></a>
+<FONT color="green">119</FONT>             */<a name="line.119"></a>
+<FONT color="green">120</FONT>            public Pool&lt;T&gt; build(ProxyFactory factory) {<a name="line.120"></a>
+<FONT color="green">121</FONT>                pool.factory = factory;<a name="line.121"></a>
+<FONT color="green">122</FONT>                return pool;<a name="line.122"></a>
+<FONT color="green">123</FONT>            }<a name="line.123"></a>
+<FONT color="green">124</FONT>        }<a name="line.124"></a>
+<FONT color="green">125</FONT>    <a name="line.125"></a>
+<FONT color="green">126</FONT>        public static class PoolResettedBy&lt;T&gt; extends PoolWith&lt;T&gt; {<a name="line.126"></a>
+<FONT color="green">127</FONT>            private PoolResettedBy(Pool&lt;T&gt; pool) {<a name="line.127"></a>
+<FONT color="green">128</FONT>                super(pool);<a name="line.128"></a>
+<FONT color="green">129</FONT>            }<a name="line.129"></a>
+<FONT color="green">130</FONT>    <a name="line.130"></a>
+<FONT color="green">131</FONT>            public PoolWith&lt;T&gt; resettedBy(Resetter&lt;? super T&gt; resetter) {<a name="line.131"></a>
+<FONT color="green">132</FONT>                pool.resetter = resetter;<a name="line.132"></a>
+<FONT color="green">133</FONT>                return new PoolWith&lt;T&gt;(pool);<a name="line.133"></a>
+<FONT color="green">134</FONT>            }<a name="line.134"></a>
+<FONT color="green">135</FONT>        }<a name="line.135"></a>
+<FONT color="green">136</FONT>    <a name="line.136"></a>
+<FONT color="green">137</FONT>        public static class PoolWith&lt;T&gt; extends PoolModeOrBuild&lt;T&gt; {<a name="line.137"></a>
+<FONT color="green">138</FONT>            private PoolWith(Pool&lt;T&gt; pool) {<a name="line.138"></a>
+<FONT color="green">139</FONT>                super(pool);<a name="line.139"></a>
+<FONT color="green">140</FONT>            }<a name="line.140"></a>
+<FONT color="green">141</FONT>    <a name="line.141"></a>
+<FONT color="green">142</FONT>            public PoolModeOrBuild&lt;T&gt; with(T... instances) {<a name="line.142"></a>
+<FONT color="green">143</FONT>                pool.add(instances);<a name="line.143"></a>
+<FONT color="green">144</FONT>                return new PoolModeOrBuild&lt;T&gt;(pool);<a name="line.144"></a>
+<FONT color="green">145</FONT>            }<a name="line.145"></a>
+<FONT color="green">146</FONT>        }<a name="line.146"></a>
+<FONT color="green">147</FONT>    <a name="line.147"></a>
+<FONT color="green">148</FONT>        public static class PoolModeOrBuild&lt;T&gt; extends PoolBuild&lt;T&gt; {<a name="line.148"></a>
+<FONT color="green">149</FONT>    <a name="line.149"></a>
+<FONT color="green">150</FONT>            private PoolModeOrBuild(Pool&lt;T&gt; pool) {<a name="line.150"></a>
+<FONT color="green">151</FONT>                super(pool);<a name="line.151"></a>
+<FONT color="green">152</FONT>            }<a name="line.152"></a>
+<FONT color="green">153</FONT>    <a name="line.153"></a>
+<FONT color="green">154</FONT>            /**<a name="line.154"></a>
+<FONT color="green">155</FONT>             * Specify the serializationMode<a name="line.155"></a>
+<FONT color="green">156</FONT>             * &lt;ul&gt;<a name="line.156"></a>
+<FONT color="green">157</FONT>             * &lt;li&gt;{@link SerializationMode#STANDARD}: the standard mode, i.e. all elements of the<a name="line.157"></a>
+<FONT color="green">158</FONT>             * pool are also serialized and a {@link NotSerializableException} may thrown&lt;/li&gt;<a name="line.158"></a>
+<FONT color="green">159</FONT>             * &lt;li&gt;{@link SerializationMode#NONE}: no element of the pool is also serialized and it<a name="line.159"></a>
+<FONT color="green">160</FONT>             * must be populated again after serialization&lt;/li&gt;<a name="line.160"></a>
+<FONT color="green">161</FONT>             * &lt;li&gt;{@link SerializationMode#FORCE}: all element of the pool are serialized, if<a name="line.161"></a>
+<FONT color="green">162</FONT>             * possible. Otherwise the pool is empty after serialization and must be populated<a name="line.162"></a>
+<FONT color="green">163</FONT>             * again.&lt;/li&gt;<a name="line.163"></a>
+<FONT color="green">164</FONT>             * &lt;/ul&gt;<a name="line.164"></a>
+<FONT color="green">165</FONT>             * <a name="line.165"></a>
+<FONT color="green">166</FONT>             * @param serializationMode<a name="line.166"></a>
+<FONT color="green">167</FONT>             * @return the pool with a certain serialization mode<a name="line.167"></a>
+<FONT color="green">168</FONT>             * @throws IllegalArgumentException if the serialization mode is not one of the<a name="line.168"></a>
+<FONT color="green">169</FONT>             *             predefined values<a name="line.169"></a>
+<FONT color="green">170</FONT>             * @since 0.2<a name="line.170"></a>
+<FONT color="green">171</FONT>             */<a name="line.171"></a>
+<FONT color="green">172</FONT>            public PoolBuild&lt;T&gt; mode(SerializationMode serializationMode) {<a name="line.172"></a>
+<FONT color="green">173</FONT>                pool.serializationMode = serializationMode;<a name="line.173"></a>
+<FONT color="green">174</FONT>                return new PoolBuild&lt;T&gt;(pool);<a name="line.174"></a>
+<FONT color="green">175</FONT>            }<a name="line.175"></a>
+<FONT color="green">176</FONT>        }<a name="line.176"></a>
+<FONT color="green">177</FONT>    <a name="line.177"></a>
+<FONT color="green">178</FONT>        /**<a name="line.178"></a>
+<FONT color="green">179</FONT>         * Construct an Pool using the {@link StandardProxyFactory} for elements that do not have to<a name="line.179"></a>
+<FONT color="green">180</FONT>         * be resetted.<a name="line.180"></a>
+<FONT color="green">181</FONT>         * <a name="line.181"></a>
+<FONT color="green">182</FONT>         * @param type the type of the instances<a name="line.182"></a>
+<FONT color="green">183</FONT>         * @since 1.0<a name="line.183"></a>
+<FONT color="green">184</FONT>         */<a name="line.184"></a>
+<FONT color="green">185</FONT>        public Pool(final Class&lt;T&gt; type) {<a name="line.185"></a>
+<FONT color="green">186</FONT>            this(type, new NoOperationResetter&lt;T&gt;(), new StandardProxyFactory());<a name="line.186"></a>
+<FONT color="green">187</FONT>        }<a name="line.187"></a>
+<FONT color="green">188</FONT>        <a name="line.188"></a>
+<FONT color="green">189</FONT>        /**<a name="line.189"></a>
+<FONT color="green">190</FONT>         * Construct an Pool using the {@link StandardProxyFactory}.<a name="line.190"></a>
+<FONT color="green">191</FONT>         *<a name="line.191"></a>
+<FONT color="green">192</FONT>         * @param type         the type of the instances<a name="line.192"></a>
+<FONT color="green">193</FONT>         * @param resetter     the resetter of the pooled elements<a name="line.193"></a>
+<FONT color="green">194</FONT>         * @since 0.2<a name="line.194"></a>
+<FONT color="green">195</FONT>         */<a name="line.195"></a>
+<FONT color="green">196</FONT>        public Pool(final Class&lt;T&gt; type, final Resetter&lt;? super T&gt; resetter) {<a name="line.196"></a>
+<FONT color="green">197</FONT>            this(type, resetter, new StandardProxyFactory());<a name="line.197"></a>
+<FONT color="green">198</FONT>        }<a name="line.198"></a>
+<FONT color="green">199</FONT>    <a name="line.199"></a>
+<FONT color="green">200</FONT>        /**<a name="line.200"></a>
+<FONT color="green">201</FONT>         * Construct a populated Pool with a specific proxy factory for elements that do not have to<a name="line.201"></a>
+<FONT color="green">202</FONT>         * be resetted.<a name="line.202"></a>
+<FONT color="green">203</FONT>         * <a name="line.203"></a>
+<FONT color="green">204</FONT>         * @param type the type of the instances<a name="line.204"></a>
+<FONT color="green">205</FONT>         * @param proxyFactory the proxy factory to use<a name="line.205"></a>
+<FONT color="green">206</FONT>         * @since 1.0<a name="line.206"></a>
+<FONT color="green">207</FONT>         */<a name="line.207"></a>
+<FONT color="green">208</FONT>        public Pool(final Class&lt;T&gt; type, final ProxyFactory proxyFactory) {<a name="line.208"></a>
+<FONT color="green">209</FONT>            this(type, new NoOperationResetter&lt;T&gt;(), proxyFactory, SerializationMode.STANDARD);<a name="line.209"></a>
+<FONT color="green">210</FONT>        }<a name="line.210"></a>
+<FONT color="green">211</FONT>    <a name="line.211"></a>
+<FONT color="green">212</FONT>        /**<a name="line.212"></a>
+<FONT color="green">213</FONT>         * Construct a populated Pool with a specific proxy factory.<a name="line.213"></a>
+<FONT color="green">214</FONT>         * <a name="line.214"></a>
+<FONT color="green">215</FONT>         * @param type the type of the instances<a name="line.215"></a>
+<FONT color="green">216</FONT>         * @param resetter the resetter of the pooled elements<a name="line.216"></a>
+<FONT color="green">217</FONT>         * @param proxyFactory the proxy factory to use<a name="line.217"></a>
+<FONT color="green">218</FONT>         * @since 0.2<a name="line.218"></a>
+<FONT color="green">219</FONT>         */<a name="line.219"></a>
+<FONT color="green">220</FONT>        public Pool(final Class&lt;T&gt; type, final Resetter&lt;? super T&gt; resetter, final ProxyFactory proxyFactory) {<a name="line.220"></a>
+<FONT color="green">221</FONT>            this(type, resetter, proxyFactory, SerializationMode.STANDARD);<a name="line.221"></a>
+<FONT color="green">222</FONT>        }<a name="line.222"></a>
+<FONT color="green">223</FONT>    <a name="line.223"></a>
+<FONT color="green">224</FONT>        /**<a name="line.224"></a>
+<FONT color="green">225</FONT>         * Construct a populated Pool with a specific proxy factory and a serialization mode. This<a name="line.225"></a>
+<FONT color="green">226</FONT>         * mode specify the behavior in case of a serialization of the Pool:<a name="line.226"></a>
+<FONT color="green">227</FONT>         * &lt;ul&gt;<a name="line.227"></a>
+<FONT color="green">228</FONT>         * &lt;li&gt;{@link SerializationMode#STANDARD}: the standard mode, i.e. all elements of the pool<a name="line.228"></a>
+<FONT color="green">229</FONT>         * are also serialized and a {@link NotSerializableException} may thrown&lt;/li&gt;<a name="line.229"></a>
+<FONT color="green">230</FONT>         * &lt;li&gt;{@link SerializationMode#NONE}: no element of the pool is also serialized and it must<a name="line.230"></a>
+<FONT color="green">231</FONT>         * be populated again after serialization&lt;/li&gt;<a name="line.231"></a>
+<FONT color="green">232</FONT>         * &lt;li&gt;{@link SerializationMode#FORCE}: all element of the pool are serialized, if possible.<a name="line.232"></a>
+<FONT color="green">233</FONT>         * Otherwise the pool is empty after serialization and must be populated again.&lt;/li&gt;<a name="line.233"></a>
+<FONT color="green">234</FONT>         * &lt;/ul&gt;<a name="line.234"></a>
+<FONT color="green">235</FONT>         * <a name="line.235"></a>
+<FONT color="green">236</FONT>         * @param type the type of the instances<a name="line.236"></a>
+<FONT color="green">237</FONT>         * @param resetter the resetter of the pooled elements<a name="line.237"></a>
+<FONT color="green">238</FONT>         * @param proxyFactory the proxy factory to use<a name="line.238"></a>
+<FONT color="green">239</FONT>         * @param mode the serialization mode.<a name="line.239"></a>
+<FONT color="green">240</FONT>         * @since 1.0<a name="line.240"></a>
+<FONT color="green">241</FONT>         */<a name="line.241"></a>
+<FONT color="green">242</FONT>        public Pool(final Class&lt;T&gt; type, final Resetter&lt;? super T&gt; resetter, final ProxyFactory proxyFactory, final SerializationMode mode) {<a name="line.242"></a>
+<FONT color="green">243</FONT>            this();<a name="line.243"></a>
+<FONT color="green">244</FONT>            this.types = new Class[]{type, Poolable.class};<a name="line.244"></a>
+<FONT color="green">245</FONT>            this.resetter = resetter;<a name="line.245"></a>
+<FONT color="green">246</FONT>            this.factory = proxyFactory;<a name="line.246"></a>
+<FONT color="green">247</FONT>            this.serializationMode = mode;<a name="line.247"></a>
+<FONT color="green">248</FONT>        }<a name="line.248"></a>
+<FONT color="green">249</FONT>        <a name="line.249"></a>
+<FONT color="green">250</FONT>        private Pool() {<a name="line.250"></a>
+<FONT color="green">251</FONT>            busyInstances = new HashMap&lt;T, WeakReference&lt;T&gt;&gt;();<a name="line.251"></a>
+<FONT color="green">252</FONT>            availableInstances = new ArrayList&lt;ObjectReference&lt;T&gt;&gt;();<a name="line.252"></a>
+<FONT color="green">253</FONT>        }<a name="line.253"></a>
+<FONT color="green">254</FONT>    <a name="line.254"></a>
+<FONT color="green">255</FONT>        /**<a name="line.255"></a>
+<FONT color="green">256</FONT>         * Add an array of new instances as resources to the pool. The pool's monitor will be notified.<a name="line.256"></a>
+<FONT color="green">257</FONT>         *<a name="line.257"></a>
+<FONT color="green">258</FONT>         * @param instances the instances<a name="line.258"></a>
+<FONT color="green">259</FONT>         * @throws NullPointerException if instance is &lt;code&gt;null&lt;/code&gt;<a name="line.259"></a>
+<FONT color="green">260</FONT>         * @since 0.2<a name="line.260"></a>
+<FONT color="green">261</FONT>         */<a name="line.261"></a>
+<FONT color="green">262</FONT>        public synchronized void add(final T... instances) {<a name="line.262"></a>
+<FONT color="green">263</FONT>            if (instances != null) {<a name="line.263"></a>
+<FONT color="green">264</FONT>                for (T instance : instances) {<a name="line.264"></a>
+<FONT color="green">265</FONT>                    if (instance == null) {<a name="line.265"></a>
+<FONT color="green">266</FONT>                        throw new NullPointerException();<a name="line.266"></a>
+<FONT color="green">267</FONT>                    }<a name="line.267"></a>
+<FONT color="green">268</FONT>                    availableInstances.add(new SimpleReference&lt;T&gt;(instance));<a name="line.268"></a>
+<FONT color="green">269</FONT>                }<a name="line.269"></a>
+<FONT color="green">270</FONT>                notifyAll();<a name="line.270"></a>
+<FONT color="green">271</FONT>            }<a name="line.271"></a>
+<FONT color="green">272</FONT>        }<a name="line.272"></a>
+<FONT color="green">273</FONT>    <a name="line.273"></a>
+<FONT color="green">274</FONT>        /**<a name="line.274"></a>
+<FONT color="green">275</FONT>         * Get an instance from the pool. If no instance is immediately available, the method will check internally for<a name="line.275"></a>
+<FONT color="green">276</FONT>         * returned objects from the garbage collector. This can be forced by calling {@link System#gc()} first.<a name="line.276"></a>
+<FONT color="green">277</FONT>         *<a name="line.277"></a>
+<FONT color="green">278</FONT>         * @return an available instance from the pool or &lt;em&gt;null&lt;/em&gt;.<a name="line.278"></a>
+<FONT color="green">279</FONT>         * @since 0.2<a name="line.279"></a>
+<FONT color="green">280</FONT>         */<a name="line.280"></a>
+<FONT color="green">281</FONT>        public synchronized T get() {<a name="line.281"></a>
+<FONT color="green">282</FONT>            final T result;<a name="line.282"></a>
+<FONT color="green">283</FONT>            if (availableInstances.size() &gt; 0 || getAvailable() &gt; 0) {<a name="line.283"></a>
+<FONT color="green">284</FONT>                final ObjectReference&lt;T&gt; delegate = availableInstances.remove(0);<a name="line.284"></a>
+<FONT color="green">285</FONT>                result = new PoolingInvoker&lt;T&gt;(this, factory, delegate, DelegationMode.DIRECT).proxy();<a name="line.285"></a>
+<FONT color="green">286</FONT>                final WeakReference&lt;T&gt; weakReference = new WeakReference&lt;T&gt;(result);<a name="line.286"></a>
+<FONT color="green">287</FONT>                busyInstances.put(delegate.get(), weakReference);<a name="line.287"></a>
+<FONT color="green">288</FONT>            } else {<a name="line.288"></a>
+<FONT color="green">289</FONT>                result = null;<a name="line.289"></a>
+<FONT color="green">290</FONT>            }<a name="line.290"></a>
+<FONT color="green">291</FONT>            return result;<a name="line.291"></a>
+<FONT color="green">292</FONT>        }<a name="line.292"></a>
+<FONT color="green">293</FONT>    <a name="line.293"></a>
+<FONT color="green">294</FONT>        /**<a name="line.294"></a>
+<FONT color="green">295</FONT>         * Release a pool instance manually.<a name="line.295"></a>
+<FONT color="green">296</FONT>         *<a name="line.296"></a>
+<FONT color="green">297</FONT>         * @param object the instance to release<a name="line.297"></a>
+<FONT color="green">298</FONT>         * @throws ClassCastException       if object was not {@link Poolable}.<a name="line.298"></a>
+<FONT color="green">299</FONT>         * @throws IllegalArgumentException if the object was not from this pool.<a name="line.299"></a>
+<FONT color="green">300</FONT>         * @since 0.2<a name="line.300"></a>
+<FONT color="green">301</FONT>         */<a name="line.301"></a>
+<FONT color="green">302</FONT>        public void release(final T object) {<a name="line.302"></a>
+<FONT color="green">303</FONT>            final Poolable poolable = Poolable.class.cast(object);<a name="line.303"></a>
+<FONT color="green">304</FONT>            @SuppressWarnings("unchecked")<a name="line.304"></a>
+<FONT color="green">305</FONT>            final PoolingInvoker&lt;T&gt; invoker = PoolingInvoker.class.cast(InvokerReference.class.cast(poolable).getInvoker());<a name="line.305"></a>
+<FONT color="green">306</FONT>            if (this != invoker.getPoolInstance()) {<a name="line.306"></a>
+<FONT color="green">307</FONT>                throw new IllegalArgumentException("Release object from different pool");<a name="line.307"></a>
+<FONT color="green">308</FONT>            }<a name="line.308"></a>
+<FONT color="green">309</FONT>            poolable.returnInstanceToPool();<a name="line.309"></a>
+<FONT color="green">310</FONT>        }<a name="line.310"></a>
+<FONT color="green">311</FONT>    <a name="line.311"></a>
+<FONT color="green">312</FONT>        /**<a name="line.312"></a>
+<FONT color="green">313</FONT>         * Return the number of available instances of the pool. The method will also try to collect any pool instance that<a name="line.313"></a>
+<FONT color="green">314</FONT>         * was freed by the garbage collector. This can be forced by calling {@link System#gc()} first. The pool's monitor<a name="line.314"></a>
+<FONT color="green">315</FONT>         * will be notified, if any object was collected and the {@link Resetter} returned the object.<a name="line.315"></a>
+<FONT color="green">316</FONT>         *<a name="line.316"></a>
+<FONT color="green">317</FONT>         * @return the number of available instances.<a name="line.317"></a>
+<FONT color="green">318</FONT>         * @since 0.2<a name="line.318"></a>
+<FONT color="green">319</FONT>         */<a name="line.319"></a>
+<FONT color="green">320</FONT>        public synchronized int getAvailable() {<a name="line.320"></a>
+<FONT color="green">321</FONT>            if (busyInstances.size() &gt; 0) {<a name="line.321"></a>
+<FONT color="green">322</FONT>                final List&lt;T&gt; freedInstances = new ArrayList&lt;T&gt;();<a name="line.322"></a>
+<FONT color="green">323</FONT>                for (final T target : busyInstances.keySet()) {<a name="line.323"></a>
+<FONT color="green">324</FONT>                    final WeakReference&lt;T&gt; ref = busyInstances.get(target);<a name="line.324"></a>
+<FONT color="green">325</FONT>                    if (ref.get() == null) {<a name="line.325"></a>
+<FONT color="green">326</FONT>                        freedInstances.add(target);<a name="line.326"></a>
+<FONT color="green">327</FONT>                    }<a name="line.327"></a>
+<FONT color="green">328</FONT>                }<a name="line.328"></a>
+<FONT color="green">329</FONT>                final List&lt;ObjectReference&lt;T&gt;&gt; resettedInstances = new ArrayList&lt;ObjectReference&lt;T&gt;&gt;();<a name="line.329"></a>
+<FONT color="green">330</FONT>                for (final T element : freedInstances) {<a name="line.330"></a>
+<FONT color="green">331</FONT>                    busyInstances.remove(element);<a name="line.331"></a>
+<FONT color="green">332</FONT>                    if (resetter.reset(element)) {<a name="line.332"></a>
+<FONT color="green">333</FONT>                        resettedInstances.add(new SimpleReference&lt;T&gt;(element));<a name="line.333"></a>
+<FONT color="green">334</FONT>                    }<a name="line.334"></a>
+<FONT color="green">335</FONT>                }<a name="line.335"></a>
+<FONT color="green">336</FONT>                availableInstances.addAll(resettedInstances);<a name="line.336"></a>
+<FONT color="green">337</FONT>                if (freedInstances.size() &gt; 0) {<a name="line.337"></a>
+<FONT color="green">338</FONT>                    notifyAll();<a name="line.338"></a>
+<FONT color="green">339</FONT>                }<a name="line.339"></a>
+<FONT color="green">340</FONT>            }<a name="line.340"></a>
+<FONT color="green">341</FONT>            return availableInstances.size();<a name="line.341"></a>
+<FONT color="green">342</FONT>        }<a name="line.342"></a>
+<FONT color="green">343</FONT>    <a name="line.343"></a>
+<FONT color="green">344</FONT>        /**<a name="line.344"></a>
+<FONT color="green">345</FONT>         * Retrieve the number of instances managed by the pool.<a name="line.345"></a>
+<FONT color="green">346</FONT>         *<a name="line.346"></a>
+<FONT color="green">347</FONT>         * @return the number of instances.<a name="line.347"></a>
+<FONT color="green">348</FONT>         * @since 0.2<a name="line.348"></a>
+<FONT color="green">349</FONT>         */<a name="line.349"></a>
+<FONT color="green">350</FONT>        public synchronized int size() {<a name="line.350"></a>
+<FONT color="green">351</FONT>            return availableInstances.size() + busyInstances.size();<a name="line.351"></a>
+<FONT color="green">352</FONT>        }<a name="line.352"></a>
+<FONT color="green">353</FONT>    <a name="line.353"></a>
+<FONT color="green">354</FONT>        private synchronized void returnInstanceToPool(final ObjectReference&lt;T&gt; reference) {<a name="line.354"></a>
+<FONT color="green">355</FONT>            busyInstances.remove(reference.get());<a name="line.355"></a>
+<FONT color="green">356</FONT>            if (resetter.reset(reference.get())) {<a name="line.356"></a>
+<FONT color="green">357</FONT>                availableInstances.add(reference);<a name="line.357"></a>
+<FONT color="green">358</FONT>            }<a name="line.358"></a>
+<FONT color="green">359</FONT>            notifyAll();<a name="line.359"></a>
+<FONT color="green">360</FONT>        }<a name="line.360"></a>
+<FONT color="green">361</FONT>    <a name="line.361"></a>
+<FONT color="green">362</FONT>        private synchronized void writeObject(final ObjectOutputStream out) throws IOException {<a name="line.362"></a>
+<FONT color="green">363</FONT>            out.defaultWriteObject();<a name="line.363"></a>
+<FONT color="green">364</FONT>            final List&lt;ObjectReference&lt;T&gt;&gt; instances = new ArrayList&lt;ObjectReference&lt;T&gt;&gt;(availableInstances);<a name="line.364"></a>
+<FONT color="green">365</FONT>            Iterator&lt;T&gt; iter;<a name="line.365"></a>
+<FONT color="green">366</FONT>            for (iter = busyInstances.keySet().iterator(); iter.hasNext();) {<a name="line.366"></a>
+<FONT color="green">367</FONT>                instances.add(new SimpleReference&lt;T&gt;(iter.next()));<a name="line.367"></a>
+<FONT color="green">368</FONT>            }<a name="line.368"></a>
+<FONT color="green">369</FONT>            SerializationMode mode = serializationMode;<a name="line.369"></a>
+<FONT color="green">370</FONT>            if (mode == SerializationMode.FORCE) {<a name="line.370"></a>
+<FONT color="green">371</FONT>                try {<a name="line.371"></a>
+<FONT color="green">372</FONT>                    final ByteArrayOutputStream buffer = new ByteArrayOutputStream();<a name="line.372"></a>
+<FONT color="green">373</FONT>                    final ObjectOutputStream testStream = new ObjectOutputStream(buffer);<a name="line.373"></a>
+<FONT color="green">374</FONT>                    testStream.writeObject(instances); // force NotSerializableException<a name="line.374"></a>
+<FONT color="green">375</FONT>                    testStream.close();<a name="line.375"></a>
+<FONT color="green">376</FONT>                    mode = SerializationMode.STANDARD;<a name="line.376"></a>
+<FONT color="green">377</FONT>                } catch (final NotSerializableException e) {<a name="line.377"></a>
+<FONT color="green">378</FONT>                    mode = SerializationMode.NONE;<a name="line.378"></a>
+<FONT color="green">379</FONT>                }<a name="line.379"></a>
+<FONT color="green">380</FONT>            }<a name="line.380"></a>
+<FONT color="green">381</FONT>            if (mode == SerializationMode.STANDARD) {<a name="line.381"></a>
+<FONT color="green">382</FONT>                out.writeObject(instances);<a name="line.382"></a>
+<FONT color="green">383</FONT>            } else {<a name="line.383"></a>
+<FONT color="green">384</FONT>                out.writeObject(new ArrayList&lt;ObjectReference&lt;T&gt;&gt;());<a name="line.384"></a>
+<FONT color="green">385</FONT>            }<a name="line.385"></a>
+<FONT color="green">386</FONT>        }<a name="line.386"></a>
+<FONT color="green">387</FONT>    <a name="line.387"></a>
+<FONT color="green">388</FONT>        private synchronized void readObject(final ObjectInputStream in) throws IOException, ClassNotFoundException {<a name="line.388"></a>
+<FONT color="green">389</FONT>            in.defaultReadObject();<a name="line.389"></a>
+<FONT color="green">390</FONT>            @SuppressWarnings("unchecked")<a name="line.390"></a>
+<FONT color="green">391</FONT>            final List&lt;ObjectReference&lt;T&gt;&gt; list = List.class.cast(in.readObject());<a name="line.391"></a>
+<FONT color="green">392</FONT>            availableInstances = list;<a name="line.392"></a>
+<FONT color="green">393</FONT>            busyInstances = new HashMap&lt;T, WeakReference&lt;T&gt;&gt;();<a name="line.393"></a>
+<FONT color="green">394</FONT>        }<a name="line.394"></a>
+<FONT color="green">395</FONT>    <a name="line.395"></a>
+<FONT color="green">396</FONT>        /**<a name="line.396"></a>
+<FONT color="green">397</FONT>         * The {@link com.thoughtworks.proxy.Invoker} of the proxy.<a name="line.397"></a>
+<FONT color="green">398</FONT>         *<a name="line.398"></a>
+<FONT color="green">399</FONT>         * @since 0.2<a name="line.399"></a>
+<FONT color="green">400</FONT>         */<a name="line.400"></a>
+<FONT color="green">401</FONT>        protected static class PoolingInvoker&lt;T&gt; extends DelegatingInvoker&lt;T&gt; {<a name="line.401"></a>
+<FONT color="green">402</FONT>            private static final long serialVersionUID = 1L;<a name="line.402"></a>
+<FONT color="green">403</FONT>    <a name="line.403"></a>
+<FONT color="green">404</FONT>            // explicit reference for serialization via reflection<a name="line.404"></a>
+<FONT color="green">405</FONT>            private Pool&lt;T&gt; pool;<a name="line.405"></a>
+<FONT color="green">406</FONT>    <a name="line.406"></a>
+<FONT color="green">407</FONT>            /**<a name="line.407"></a>
+<FONT color="green">408</FONT>             * Construct a PoolingInvoker.<a name="line.408"></a>
+<FONT color="green">409</FONT>             *<a name="line.409"></a>
+<FONT color="green">410</FONT>             * @param pool              the corresponding {@link Pool}<a name="line.410"></a>
+<FONT color="green">411</FONT>             * @param proxyFactory      the {@link ProxyFactory} to use<a name="line.411"></a>
+<FONT color="green">412</FONT>             * @param delegateReference the {@link ObjectReference} with the delegate<a name="line.412"></a>
+<FONT color="green">413</FONT>             * @param delegationMode    one of the {@linkplain DelegationMode delegation modes}<a name="line.413"></a>
+<FONT color="green">414</FONT>             * @since 1.0<a name="line.414"></a>
+<FONT color="green">415</FONT>             */<a name="line.415"></a>
+<FONT color="green">416</FONT>            protected PoolingInvoker(<a name="line.416"></a>
+<FONT color="green">417</FONT>                    Pool&lt;T&gt; pool, ProxyFactory proxyFactory, ObjectReference&lt;T&gt; delegateReference, DelegationMode delegationMode) {<a name="line.417"></a>
+<FONT color="green">418</FONT>                super(proxyFactory, delegateReference, delegationMode);<a name="line.418"></a>
+<FONT color="green">419</FONT>                this.pool = pool;<a name="line.419"></a>
+<FONT color="green">420</FONT>            }<a name="line.420"></a>
+<FONT color="green">421</FONT>    <a name="line.421"></a>
+<FONT color="green">422</FONT>            @Override<a name="line.422"></a>
+<FONT color="green">423</FONT>            public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {<a name="line.423"></a>
+<FONT color="green">424</FONT>                Object result;<a name="line.424"></a>
+<FONT color="green">425</FONT>                if (method.equals(returnInstanceToPool)) {<a name="line.425"></a>
+<FONT color="green">426</FONT>                    returnInstanceToPool();<a name="line.426"></a>
+<FONT color="green">427</FONT>                    result = Void.TYPE; <a name="line.427"></a>
+<FONT color="green">428</FONT>                } else<a name="line.428"></a>
+<FONT color="green">429</FONT>                    result = super.invoke(proxy, method, args);<a name="line.429"></a>
+<FONT color="green">430</FONT>                return result;<a name="line.430"></a>
+<FONT color="green">431</FONT>            }<a name="line.431"></a>
+<FONT color="green">432</FONT>    <a name="line.432"></a>
+<FONT color="green">433</FONT>            /**<a name="line.433"></a>
+<FONT color="green">434</FONT>             * Return the current instance to the pool. The pool's monitor will be notified, if the {@link Resetter} returns<a name="line.434"></a>
+<FONT color="green">435</FONT>             * the object.<a name="line.435"></a>
+<FONT color="green">436</FONT>             *<a name="line.436"></a>
+<FONT color="green">437</FONT>             * @since 0.2<a name="line.437"></a>
+<FONT color="green">438</FONT>             */<a name="line.438"></a>
+<FONT color="green">439</FONT>            public void returnInstanceToPool() {<a name="line.439"></a>
+<FONT color="green">440</FONT>                pool.returnInstanceToPool(getDelegateReference());<a name="line.440"></a>
+<FONT color="green">441</FONT>            }<a name="line.441"></a>
+<FONT color="green">442</FONT>    <a name="line.442"></a>
+<FONT color="green">443</FONT>            /**<a name="line.443"></a>
+<FONT color="green">444</FONT>             * Create a proxy for the types of the pool.<a name="line.444"></a>
+<FONT color="green">445</FONT>             *<a name="line.445"></a>
+<FONT color="green">446</FONT>             * @return the new proxy instance<a name="line.446"></a>
+<FONT color="green">447</FONT>             * @since 0.2<a name="line.447"></a>
+<FONT color="green">448</FONT>             */<a name="line.448"></a>
+<FONT color="green">449</FONT>            protected T proxy() {<a name="line.449"></a>
+<FONT color="green">450</FONT>                return getProxyFactory().&lt;T&gt;createProxy(this, pool.types);<a name="line.450"></a>
+<FONT color="green">451</FONT>            }<a name="line.451"></a>
+<FONT color="green">452</FONT>    <a name="line.452"></a>
+<FONT color="green">453</FONT>            private Pool&lt;T&gt; getPoolInstance() {<a name="line.453"></a>
+<FONT color="green">454</FONT>                return pool;<a name="line.454"></a>
+<FONT color="green">455</FONT>            }<a name="line.455"></a>
+<FONT color="green">456</FONT>        }<a name="line.456"></a>
+<FONT color="green">457</FONT>    }<a name="line.457"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</PRE>
+</BODY>
+</HTML>

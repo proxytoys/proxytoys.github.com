@@ -1,0 +1,112 @@
+<HTML>
+<BODY BGCOLOR="white">
+<PRE>
+<FONT color="green">001</FONT>    /*<a name="line.1"></a>
+<FONT color="green">002</FONT>     * (c) 2005, 2009, 2010 ThoughtWorks Ltd<a name="line.2"></a>
+<FONT color="green">003</FONT>     * All rights reserved.<a name="line.3"></a>
+<FONT color="green">004</FONT>     *<a name="line.4"></a>
+<FONT color="green">005</FONT>     * The software in this package is published under the terms of the BSD<a name="line.5"></a>
+<FONT color="green">006</FONT>     * style license a copy of which has been included with this distribution in<a name="line.6"></a>
+<FONT color="green">007</FONT>     * the LICENSE.txt file.<a name="line.7"></a>
+<FONT color="green">008</FONT>     * <a name="line.8"></a>
+<FONT color="green">009</FONT>     * Created on 21-Jul-2005<a name="line.9"></a>
+<FONT color="green">010</FONT>     */<a name="line.10"></a>
+<FONT color="green">011</FONT>    package com.thoughtworks.proxy.kit;<a name="line.11"></a>
+<FONT color="green">012</FONT>    <a name="line.12"></a>
+<FONT color="green">013</FONT>    import java.lang.reflect.Method;<a name="line.13"></a>
+<FONT color="green">014</FONT>    <a name="line.14"></a>
+<FONT color="green">015</FONT>    <a name="line.15"></a>
+<FONT color="green">016</FONT>    /**<a name="line.16"></a>
+<FONT color="green">017</FONT>     * An Invoker that is able to call protected and private methods. If the proxies type is an abstract class, it might be<a name="line.17"></a>
+<FONT color="green">018</FONT>     * necessary to use an PrivateInvoker instead of a SimpleInvoker. Otherwise the method implementations may not call the<a name="line.18"></a>
+<FONT color="green">019</FONT>     * protected or private methods of the own type.<a name="line.19"></a>
+<FONT color="green">020</FONT>     *<a name="line.20"></a>
+<FONT color="green">021</FONT>     * @author J&amp;ouml;rg Schaible<a name="line.21"></a>
+<FONT color="green">022</FONT>     * @since 0.2<a name="line.22"></a>
+<FONT color="green">023</FONT>     */<a name="line.23"></a>
+<FONT color="green">024</FONT>    public class PrivateInvoker extends SimpleInvoker {<a name="line.24"></a>
+<FONT color="green">025</FONT>    <a name="line.25"></a>
+<FONT color="green">026</FONT>        private static final long serialVersionUID = 1L;<a name="line.26"></a>
+<FONT color="green">027</FONT>    <a name="line.27"></a>
+<FONT color="green">028</FONT>        /**<a name="line.28"></a>
+<FONT color="green">029</FONT>         * Construct a PrivateInvoker.<a name="line.29"></a>
+<FONT color="green">030</FONT>         *<a name="line.30"></a>
+<FONT color="green">031</FONT>         * @param target the invocation target.<a name="line.31"></a>
+<FONT color="green">032</FONT>         * @since 0.2<a name="line.32"></a>
+<FONT color="green">033</FONT>         */<a name="line.33"></a>
+<FONT color="green">034</FONT>        public PrivateInvoker(final Object target) {<a name="line.34"></a>
+<FONT color="green">035</FONT>            super(target);<a name="line.35"></a>
+<FONT color="green">036</FONT>        }<a name="line.36"></a>
+<FONT color="green">037</FONT>    <a name="line.37"></a>
+<FONT color="green">038</FONT>        @Override<a name="line.38"></a>
+<FONT color="green">039</FONT>        public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {<a name="line.39"></a>
+<FONT color="green">040</FONT>            if (getTarget() != null &amp;&amp; !method.isAccessible()) {<a name="line.40"></a>
+<FONT color="green">041</FONT>                method.setAccessible(true);<a name="line.41"></a>
+<FONT color="green">042</FONT>            }<a name="line.42"></a>
+<FONT color="green">043</FONT>            return super.invoke(proxy, method, args);<a name="line.43"></a>
+<FONT color="green">044</FONT>        }<a name="line.44"></a>
+<FONT color="green">045</FONT>    <a name="line.45"></a>
+<FONT color="green">046</FONT>    }<a name="line.46"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</PRE>
+</BODY>
+</HTML>

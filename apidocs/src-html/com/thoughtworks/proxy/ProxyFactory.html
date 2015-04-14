@@ -1,0 +1,128 @@
+<HTML>
+<BODY BGCOLOR="white">
+<PRE>
+<FONT color="green">001</FONT>    /*<a name="line.1"></a>
+<FONT color="green">002</FONT>     * (c) 2003-2005, 2009, 2010 ThoughtWorks Ltd<a name="line.2"></a>
+<FONT color="green">003</FONT>     * All rights reserved.<a name="line.3"></a>
+<FONT color="green">004</FONT>     *<a name="line.4"></a>
+<FONT color="green">005</FONT>     * The software in this package is published under the terms of the BSD<a name="line.5"></a>
+<FONT color="green">006</FONT>     * style license a copy of which has been included with this distribution in<a name="line.6"></a>
+<FONT color="green">007</FONT>     * the LICENSE.txt file.<a name="line.7"></a>
+<FONT color="green">008</FONT>     * <a name="line.8"></a>
+<FONT color="green">009</FONT>     * Created on 03-May-2004<a name="line.9"></a>
+<FONT color="green">010</FONT>     */<a name="line.10"></a>
+<FONT color="green">011</FONT>    package com.thoughtworks.proxy;<a name="line.11"></a>
+<FONT color="green">012</FONT>    <a name="line.12"></a>
+<FONT color="green">013</FONT>    import java.io.Serializable;<a name="line.13"></a>
+<FONT color="green">014</FONT>    <a name="line.14"></a>
+<FONT color="green">015</FONT>    <a name="line.15"></a>
+<FONT color="green">016</FONT>    /**<a name="line.16"></a>
+<FONT color="green">017</FONT>     * Abstraction layer for proxy generation. Depending on this interface (rather than {@link java.lang.reflect.Proxy}<a name="line.17"></a>
+<FONT color="green">018</FONT>     * directly) will allow you to use Java's standard proxy mechanism interchangeably with e.g. CGLIB.<a name="line.18"></a>
+<FONT color="green">019</FONT>     *<a name="line.19"></a>
+<FONT color="green">020</FONT>     * @author Aslak Helles&amp;oslash;y<a name="line.20"></a>
+<FONT color="green">021</FONT>     * @since 0.1<a name="line.21"></a>
+<FONT color="green">022</FONT>     */<a name="line.22"></a>
+<FONT color="green">023</FONT>    public interface ProxyFactory extends Serializable {<a name="line.23"></a>
+<FONT color="green">024</FONT>    <a name="line.24"></a>
+<FONT color="green">025</FONT>        /**<a name="line.25"></a>
+<FONT color="green">026</FONT>         * Create a new proxy instance.<a name="line.26"></a>
+<FONT color="green">027</FONT>         * <a name="line.27"></a>
+<FONT color="green">028</FONT>         * @param &lt;T&gt; The proxy's type. <a name="line.28"></a>
+<FONT color="green">029</FONT>         * @param invoker the invocation handler.<a name="line.29"></a>
+<FONT color="green">030</FONT>         * @param types   the types the proxy must emulate.<a name="line.30"></a>
+<FONT color="green">031</FONT>         * @return the new proxy instance.<a name="line.31"></a>
+<FONT color="green">032</FONT>         * @since 1.0<a name="line.32"></a>
+<FONT color="green">033</FONT>         */<a name="line.33"></a>
+<FONT color="green">034</FONT>        &lt;T&gt; T createProxy(Invoker invoker, Class&lt;?&gt;... types);<a name="line.34"></a>
+<FONT color="green">035</FONT>    <a name="line.35"></a>
+<FONT color="green">036</FONT>        /**<a name="line.36"></a>
+<FONT color="green">037</FONT>         * Test if the ProxyFactory implementation is capable of creating a proxy instance for the given type.<a name="line.37"></a>
+<FONT color="green">038</FONT>         *<a name="line.38"></a>
+<FONT color="green">039</FONT>         * @param type the type to create a proxy instance for.<a name="line.39"></a>
+<FONT color="green">040</FONT>         * @return &lt;code&gt;true&lt;/code&gt; if the type is supported.<a name="line.40"></a>
+<FONT color="green">041</FONT>         * @since 0.1<a name="line.41"></a>
+<FONT color="green">042</FONT>         */<a name="line.42"></a>
+<FONT color="green">043</FONT>        boolean canProxy(Class&lt;?&gt; type);<a name="line.43"></a>
+<FONT color="green">044</FONT>    <a name="line.44"></a>
+<FONT color="green">045</FONT>        /**<a name="line.45"></a>
+<FONT color="green">046</FONT>         * Test if the given type is a proxy class.<a name="line.46"></a>
+<FONT color="green">047</FONT>         *<a name="line.47"></a>
+<FONT color="green">048</FONT>         * @param type the type to examine.<a name="line.48"></a>
+<FONT color="green">049</FONT>         * @return &lt;code&gt;true&lt;/code&gt; if the given type is a proxy class.<a name="line.49"></a>
+<FONT color="green">050</FONT>         * @since 0.1<a name="line.50"></a>
+<FONT color="green">051</FONT>         */<a name="line.51"></a>
+<FONT color="green">052</FONT>        boolean isProxyClass(Class&lt;?&gt; type);<a name="line.52"></a>
+<FONT color="green">053</FONT>    <a name="line.53"></a>
+<FONT color="green">054</FONT>        /**<a name="line.54"></a>
+<FONT color="green">055</FONT>         * Retrieve the invocation handler of the proxy.<a name="line.55"></a>
+<FONT color="green">056</FONT>         *<a name="line.56"></a>
+<FONT color="green">057</FONT>         * @param proxy the proxy instance.<a name="line.57"></a>
+<FONT color="green">058</FONT>         * @return the {@link Invoker} instance acting as invocation handler.<a name="line.58"></a>
+<FONT color="green">059</FONT>         * @since 0.1<a name="line.59"></a>
+<FONT color="green">060</FONT>         */<a name="line.60"></a>
+<FONT color="green">061</FONT>        Invoker getInvoker(Object proxy);<a name="line.61"></a>
+<FONT color="green">062</FONT>    }<a name="line.62"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</PRE>
+</BODY>
+</HTML>
