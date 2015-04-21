@@ -1,1 +1,10 @@
-* text=auto
+*.css text
+*.htm* text
+*.js text
+*.xml text
+
+*.gif binary
+*.jpg binary
+*.png binary
+*.psp binary
+*.vsd binary
