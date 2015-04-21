@@ -1,6 +1,9 @@
 *.css text
+*.diff text
 *.htm* text
+*.java text
 *.js text
+*.patch text
 *.xml text
 
 *.gif binary
