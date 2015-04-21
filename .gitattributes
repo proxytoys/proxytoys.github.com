@@ -1,3 +1,5 @@
+* text=auto
+
 *.css text
 *.diff text
 *.htm* text
