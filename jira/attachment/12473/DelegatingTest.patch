@@ -1,0 +1,56 @@
+--- proxytoys/test/com/thoughtworks/proxy/toys/delegate/DelegatingTest.java	2004-07-12 12:13:40.000000000 -0400
++++ /usr/java/proxytoys/test/com/thoughtworks/proxy/toys/delegate/DelegatingTest.java	2004-07-13 11:50:25.407751131 -0400
+@@ -20,6 +20,13 @@
+     
+     public interface Foo {
+         String getSomething() throws RemoteException;
++        
++        void doSomething(Object something) throws RemoteException;
++    }
++    
++    public interface Bar
++    {
++        String doSomethingElse() throws RemoteException;
+     }
+     
+     private Mock fooMock;
+@@ -87,4 +94,39 @@
+     	foo = createProxy(null);
+         assertNull(foo.getSomething());
+     }
++    
++    public void testProxyMethodWithDependencyOnAnotherProxiedMethod() throws Exception
++    {
++
++      Bar concreteBar = null; 
++      final Foo concreteFoo = new Foo()
++      {
++          public String getSomething()
++          {
++              return "something";
++          }
++          
++          public void doSomething(Object something) throws RemoteException
++          {
++              ((Bar)something).doSomethingElse();
++          }
++      };
++      
++      final Foo fooProxy = createProxy(concreteFoo);
++        
++      // Here is an object using the a Foo proxy 
++      concreteBar = new Bar()
++      {        
++          
++        public String doSomethingElse() throws RemoteException
++        {
++            // perform an operation on the proxied foo
++            return fooProxy.getSomething();
++        }
++          
++      };
++      
++      fooProxy.doSomething(concreteBar);
++    }  
++    
+ }

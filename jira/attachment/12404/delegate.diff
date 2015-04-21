@@ -1,0 +1,39 @@
+Index: src/com/thoughtworks/proxy/toys/delegate/DelegatingInvoker.java
+===================================================================
+--- src/com/thoughtworks/proxy/toys/delegate/DelegatingInvoker.java	(revision 69)
++++ src/com/thoughtworks/proxy/toys/delegate/DelegatingInvoker.java	(working copy)
+@ -57,7 +58,14 @@
+ 			if (proxyFactory.isProxyClass(arg.getClass())) {
+ 				arg = proxyFactory.getInvoker(arg);
+ 			}
+-			result = equals(arg) ? Boolean.TRUE : Boolean.FALSE;
++            if (arg instanceof DelegatingInvoker) {
++                arg = ((DelegatingInvoker)arg).delegate();
++            }
++            if (delegate() == null) {
++                result = arg == null ? Boolean.TRUE : Boolean.FALSE;
++            } else {
++                result = delegate().equals(arg) ? Boolean.TRUE : Boolean.FALSE;
++            }
+ 		} else if (method.equals(ClassHierarchyIntrospector.hashCode)) {
+ 			result = new Integer(hashCode());
+             
+ndex: test/com/thoughtworks/proxy/toys/delegate/DelegatingTest.java
+===================================================================
+--- test/com/thoughtworks/proxy/toys/delegate/DelegatingTest.java	(revision 69)
++++ test/com/thoughtworks/proxy/toys/delegate/DelegatingTest.java	(working copy)
+@@ -40,6 +40,14 @@
+     private Foo createProxy(Object impl) {
+         return (Foo)Delegating.object(Foo.class, impl, getFactory());
+     }
++    
++    public void testEqualityOfProxies() {
++        String string = new String("some thing");
++        Foo foo = createProxy(string);
++        assertEquals(foo, foo);
++        assertEquals(foo, string);
++        assertEquals(foo, createProxy(string));
++    }
+ 
+     public void testShouldDelegateMethodsCalledOnInterface() throws Exception {
+         // expect

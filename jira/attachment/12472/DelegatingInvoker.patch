@@ -1,0 +1,92 @@
+--- proxytoys/src/com/thoughtworks/proxy/toys/delegate/DelegatingInvoker.java	2004-07-12 12:13:58.000000000 -0400
++++ /usr/java/proxytoys/src/com/thoughtworks/proxy/toys/delegate/DelegatingInvoker.java	2004-07-13 11:55:33.333330967 -0400
+@@ -9,6 +9,8 @@
+ 
+ import java.lang.reflect.InvocationTargetException;
+ import java.lang.reflect.Method;
++import java.util.HashSet;
++import java.util.Set;
+ 
+ import com.thoughtworks.proxy.Invoker;
+ import com.thoughtworks.proxy.ProxyFactory;
+@@ -35,12 +37,13 @@
+     protected final ProxyFactory proxyFactory;
+     protected final ObjectReference delegateReference;
+     private final boolean staticTyping;
+-    private boolean executing = false;
++    private final Set executing;
+ 
+ 	public DelegatingInvoker(ProxyFactory proxyFactory, ObjectReference delegateReference, boolean staticTyping) {
+         this.proxyFactory = proxyFactory;
+         this.delegateReference = delegateReference;
+         this.staticTyping = staticTyping;
++        executing = new HashSet();
+ 	}
+ 
+ 	public DelegatingInvoker(final Object delegate) {
+@@ -48,34 +51,45 @@
+ 	}
+ 	
+ 	public Object invoke(Object proxy, Method method, Object[] args)
+-			throws Throwable {
+-		final Object result;
+-
++    		throws Throwable {
++    	final Object result;
++    
+         // equals(...) and hashCode()
+         if (method.equals(ClassHierarchyIntrospector.equals)) {
+-			Object arg = args[0];
+-			if (proxyFactory.isProxyClass(arg.getClass())) {
+-				arg = proxyFactory.getInvoker(arg);
+-			}
+-			result = equals(arg) ? Boolean.TRUE : Boolean.FALSE;
+-		} else if (method.equals(ClassHierarchyIntrospector.hashCode)) {
+-			result = new Integer(hashCode());
++    		Object arg = args[0];
++    		if (proxyFactory.isProxyClass(arg.getClass())) {
++    			arg = proxyFactory.getInvoker(arg);
++    		}
++    		result = equals(arg) ? Boolean.TRUE : Boolean.FALSE;
++    	} else if (method.equals(ClassHierarchyIntrospector.hashCode)) {
++    		result = new Integer(hashCode());
+             
+         // null delegate
+-		} else if (delegate() == null) {
++    	} else if (delegate() == null) {
+             result = null;
+             
+         // regular method call
+         } else {
+-			if (executing) {
+-				throw new IllegalStateException("Cyclic dependency");
+-			}
+-			executing = true;
+-			result = invokeOnDelegate(getMethodToInvoke(method), args);
+-		}
+-		executing = false;
+-		return result;
+-	}
++            Method methodToInvoke = getMethodToInvoke(method);
++    		try
++            {
++                if (executing.contains(methodToInvoke)) {
++                	throw new IllegalStateException("Cyclic dependency");
++                }
++                executing.add(methodToInvoke) ;
++                
++                result = invokeOnDelegate(methodToInvoke, args);
++            }
++            finally
++            {
++                if(methodToInvoke != null)
++                {
++                    executing.remove(methodToInvoke);
++                }
++            }
++    	}
++    	return result;
++    }
+ 
+ 	protected Object delegate() {
+ 		return delegateReference.get();
