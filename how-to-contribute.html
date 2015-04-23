@@ -1,7 +1,33 @@
----
-layout: default
-name: How to Contribute
----
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <!--
+     (c) 2005, 2009, 2010 ThoughtWorks Ltd. All rights reserved.
+     (c) 2015 ProxyToys Committers. All rights reserved.
+    
+     The software in this package is published under the terms of the BSD
+     style license a copy of which has been included with this distribution in
+     the LICENSE.txt file.
+    
+     Created on 07-May-2005
+    -->
+    <head>
+        <title>ProxyToys - How to Contribute</title>
+        <link rel="stylesheet" type="text/css" href="style.css"/>
+        
+    
+  
+    </head>
+    <body>
+
+        <div id="banner">
+            <a href="index.html"><img id="logo" src="logo.gif" alt="ProxyToys Logo"/></a>
+            <div id="title">How to Contribute</div>
+        </div>
+
+        <div id="center" class="Content2Column">
+            <div id="content">
+
+                
 
     <p>ProxyToys is nothing without contributions from the user community.  There are many ways to
     contribute.  We are constantly working on the software and documentation, so it's a good
@@ -13,28 +39,28 @@ name: How to Contribute
     help with this aspect of the project will be welcomed with open arms, or at the very least
     with open email clients!</p>
     <p>The documentation is in plain HTML and
-        <a href="http://svn.codehaus.org/proxytoys/trunk/website/src/site/content/">held in Subversion</a></p>
+        <a href="https://github.com/proxytoys/proxytoys/tree/master/website/src/site/content/">held in Git</a></p>
 
     <h1 id="examples">Examples</h1>
     <p>We are working on examples of using ProxyToys, but we can always do with more.</p>
 
     <p>The examples are proper Java source files and
-        <a href="http://svn.codehaus.org/proxytoys/trunk/example-code/src/main/java/proxytoys/examples/overview/">
-            held in Subversion</a></p>
+        <a href="https://github.com/proxytoys/proxytoys/tree/master/example-code/src/main/java/proxytoys/examples/overview/">
+            held in Git</a></p>
 
     <h1 id="feature-requests">Feature Requests</h1>
     <p>If you want to request a new feature you can either make a request through the 
-    <a href="http://jira.codehaus.org/browse/PTOYS">issue tracker</a> or by sending a message to the
+    <a href="https://github.com/proxytoys/proxytoys/issues">issue tracker</a> or by sending a message to the
     <a href="mailing-lists.html">development mailing list</a>.  The benefit of any new features
     will be discussed on the mailing list, so its a good idea to sign up so that you can make your voice heard.</p>
 
     <h1 id="bug-reports">Bug Reports</h1>
-    <p>You can report bugs through the <a href="http://jira.codehaus.org/browse/PTOYS">issue tracker</a> (preferred)
+    <p>You can report bugs through the <a href="https://github.com/proxytoys/proxytoys/issues">issue tracker</a> (preferred)
     interface or the <a href="mailing-lists.html">development mailing list</a>.  We love bug reports that
         include a failing unit test.</p>
 
     <h1 id="patches">Bug Fixes</h1>
-    <p>Better than JIRA issues with failing unit tests, are JIRA issues with unit tests, <b>and</b> a fix.
+    <p>Better than issues in the bug tracker with failing unit tests, are issues with unit tests, <b>and</b> a fix.
         Bug fixes are best sent as patches that we can apply to the
     codebase.  Remember to tell us which version the patch should be applied against if not the current trunk, or
     we could get very confused.  To be accepted into the codebase, patches must be released
@@ -53,5 +79,54 @@ name: How to Contribute
     project on the ProxyToys site.</p>
 
     <h1>Become a Committer</h1>
-    <p>We follow the <a href="http://www.codehaus.org/Manifesto">Codehaus manifesto</a>
-    when it comes to expanding the core team.</p>
+    <p>Simply show some interest in bug fixes and submissions, we'll expand the core team easily.</p>
+
+  
+
+                <br/><br/>
+                
+            </div>
+        </div>
+
+        <div class="SidePanel" id="left">
+                <div class="MenuGroup">
+                    <h1>ProxyToxy in General</h1>
+                    <ul>
+                                <li><a href="index.html">About ProxyToys</a></li>
+                                <li><a href="news.html">News</a></li>
+                                <li><a href="changes.html">Change History</a></li>
+                                <li><a href="license.html">License</a></li>
+                                <li><a href="download.html">Download</a></li>
+                                <li><a href="versioning.html">About Versioning</a></li>
+                    </ul>
+                </div>
+                <div class="MenuGroup">
+                    <h1>Using ProxyToys</h1>
+                    <ul>
+                                <li><a href="tutorial.html">One minute Tutorial</a></li>
+                                <li><a href="factories.html">Proxy Factories</a></li>
+                                <li><a href="toys.html">Toys</a></li>
+                                <li><a href="faq.html">Frequently Asked Questions</a></li>
+                                <li><a href="example-code.html">Example Code</a></li>
+                                <li><a href="mailing-lists.html">Mailing Lists</a></li>
+                                <li><a href="apidocs/index.html">Javadoc</a></li>
+                                <li><a href="issues.html">Reporting Issues</a></li>
+                    </ul>
+                </div>
+                <div class="MenuGroup">
+                    <h1>Developing ProxyToys</h1>
+                    <ul>
+                                <li><a href="architecture.html">Architecture Overview</a></li>
+                                <li class="currentLink">How to Contribute</li>
+                                <li><a href="team.html">Development Team</a></li>
+                                <li><a href="repository.html">Source Repository</a></li>
+                                <li><a href="https://github.com/proxytoys/proxytoys">GitHub Project</a></li>
+                                <li><a href="http://ci.codehaus.org/browse/PROXYTOYS">Build Status</a></li>
+                                <li><a href="https://www.openhub.net/p/10075">Code Statistics</a></li>
+                    </ul>
+                </div>
+        </div>
+        
+
+  </body>
+</html>

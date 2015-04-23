@@ -1,48 +1,103 @@
----
-layout: default
-name: Source Repository
----
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <!--
+     (c) 2005, 2009, 2010 ThoughtWorks Ltd. All rights reserved.
+     (c) 2015 ProxyToys Committers. All rights reserved.
+    
+     The software in this package is published under the terms of the BSD
+     style license a copy of which has been included with this distribution in
+     the LICENSE.txt file.
+    
+     Created on 07-May-2005
+    -->
+    <head>
+        <title>ProxyToys - Source Repository</title>
+        <link rel="stylesheet" type="text/css" href="style.css"/>
+        
+    
+  
+    </head>
+    <body>
 
+        <div id="banner">
+            <a href="index.html"><img id="logo" src="logo.gif" alt="ProxyToys Logo"/></a>
+            <div id="title">Source Repository</div>
+        </div>
+
+        <div id="center" class="Content2Column">
+            <div id="content">
+
+                
 
 	<h1 id="modules">Modules</h1>
 
 	ProxyToys project consists of several modules:
 	<ol>
 		<li>proxytoys - the core module</li>
-		<li>proxytoys-example-code - the example code used in the Javadoc of the package descriptions</li>
-		<li>proxytoys-distribution - the module contains the documentation and assembles the src and bin distributions</li>
+		<li>website - the module contains the documentation and assembles the src and bin distributions</li>
+		<li>example-code - the example code used in the Javadoc of the package descriptions</li>
 	</ol>
-	When you checkout the trunk you'll get all the modules, but you can just add the module you are interested in to the URL, e.g.
-		<div class="Source"><pre>svn co http://svn.codehaus.org/proxytoys/trunk/[module]</pre></div>
-	to checkout out the single module separately.
+	When you clone the Git repository you'll get all the modules.
 
 	<h2 id="browser">Browser</h2>
 
-	<p>You can use the browser to navigate within the sources <a href="http://svn.proxytoys.codehaus.org/browse/proxytoys/trunk/">online</a>
-	with the help of the FishEye installation on Codehaus.</p>
+	<p>You can use the browser to navigate within the sources <a href="https://github.com/proxytoys/proxytoys">online</a>.</p>
 
-    <h2 id="subversion">Subversion</h2>
+    <h2 id="scm">Source Control Manager</h2>
 
-    ProxyToys uses Subversion as the SCM.  See <a href="http://subversion.tigris.org">Subversion website</a> for details and documentation on IDE integration.
-	<h2 id="webdav">WebDav Access</h2>
+    ProxyToys uses Git as the SCM.  See <a href="http://git-scm.com/">Git website</a> for details and documentation on IDE integration.
 
-	WebDav is an access protocol supported by SVN and being http-based is often allowed by corporate firewalls.
+	<h2 id="access">Access</h2>
+	
+	See <a href="https://github.com/proxytoys/proxytoys.git">GitHub documentation</a> about the different possibilities to
+	access the source code.
 
-	<h3 id="webdav-anon">Anonymous Access</h3>
+  
 
-		<div class="Source"><pre>svn co http://svn.codehaus.org/proxytoys/trunk</pre></div>
-		
-		<p>
-		You might also use this URL to <a href="http://svn.codehaus.org/proxytoys/trunk">browse the repository</a> in a simple manner.
-		</p>
+                <br/><br/>
+                
+            </div>
+        </div>
 
-	<h3 id="webdav-auth">Committer Access</h3>
+        <div class="SidePanel" id="left">
+                <div class="MenuGroup">
+                    <h1>ProxyToxy in General</h1>
+                    <ul>
+                                <li><a href="index.html">About ProxyToys</a></li>
+                                <li><a href="news.html">News</a></li>
+                                <li><a href="changes.html">Change History</a></li>
+                                <li><a href="license.html">License</a></li>
+                                <li><a href="download.html">Download</a></li>
+                                <li><a href="versioning.html">About Versioning</a></li>
+                    </ul>
+                </div>
+                <div class="MenuGroup">
+                    <h1>Using ProxyToys</h1>
+                    <ul>
+                                <li><a href="tutorial.html">One minute Tutorial</a></li>
+                                <li><a href="factories.html">Proxy Factories</a></li>
+                                <li><a href="toys.html">Toys</a></li>
+                                <li><a href="faq.html">Frequently Asked Questions</a></li>
+                                <li><a href="example-code.html">Example Code</a></li>
+                                <li><a href="mailing-lists.html">Mailing Lists</a></li>
+                                <li><a href="apidocs/index.html">Javadoc</a></li>
+                                <li><a href="issues.html">Reporting Issues</a></li>
+                    </ul>
+                </div>
+                <div class="MenuGroup">
+                    <h1>Developing ProxyToys</h1>
+                    <ul>
+                                <li><a href="architecture.html">Architecture Overview</a></li>
+                                <li><a href="how-to-contribute.html">How to Contribute</a></li>
+                                <li><a href="team.html">Development Team</a></li>
+                                <li class="currentLink">Source Repository</li>
+                                <li><a href="https://github.com/proxytoys/proxytoys">GitHub Project</a></li>
+                                <li><a href="http://ci.codehaus.org/browse/PROXYTOYS">Build Status</a></li>
+                                <li><a href="https://www.openhub.net/p/10075">Code Statistics</a></li>
+                    </ul>
+                </div>
+        </div>
+        
 
-		<div class="Source"><pre>svn co https://svn.codehaus.org/proxytoys/trunk</pre></div>
-
-		<p>
-		This access protocol is available to all, but only developers can commit changes.
-		</p>
-		<p>
-		Developers require a LDAP password for Codehaus username (contact Bob at the Haus to get assigned a password if you don't have one).
-		</p>
+  </body>
+</html>

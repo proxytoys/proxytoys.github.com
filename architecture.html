@@ -11,17 +11,17 @@
      Created on 07-May-2005
     -->
     <head>
-        <title>ProxyToys - License</title>
+        <title>ProxyToys - Architecture Overview</title>
         <link rel="stylesheet" type="text/css" href="style.css"/>
         
+        
     
-  
     </head>
     <body>
 
         <div id="banner">
             <a href="index.html"><img id="logo" src="logo.gif" alt="ProxyToys Logo"/></a>
-            <div id="title">License</div>
+            <div id="title">Architecture Overview</div>
         </div>
 
         <div id="center" class="Content2Column">
@@ -29,38 +29,58 @@
 
                 
 
-    <p>ProxyToys is open source software, made available under a BSD license.</p>
+        <!-- ************ -->
 
-<div class="Source Java"><pre>Copyright (c) 2003-2005, 2009, 2010 Thoughtworks Ltd. 
-Written by Dan North, Aslak Helles&oslash;y, J&ouml;rg Schaible, Paul Hammant.
+        <h1 id="components">Components</h1>
 
-All rights reserved.
+        <p>ProxyToys consists of two main components:</p>
 
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
+        <ul>
+            <li><b>Proxy Factories</b></li>
+            <li><b>Toy Factories</b></li>
+        </ul>
+        
+        <p>The Proxy Factories provide an independent way to create general proxy instances. The toys
+        are factories for common problems solved with proxies (and themselves use Proxy Factories).</p>
 
-Redistributions of source code must retain the above copyright notice, this list of
-conditions and the following disclaimer. Redistributions in binary form must reproduce
-the above copyright notice, this list of conditions and the following disclaimer in
-the documentation and/or other materials provided with the distribution.
+        <!-- ************ -->
 
-Neither the name of proxytoys nor the names of its contributors may be used to endorse
-or promote products derived from this software without specific prior written
-permission.
+        <h1 id="factories">Proxy Factories</h1>
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
-EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
-OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT
-SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
-INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
-TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
-BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY
-WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
-DAMAGE.
-</pre></div>
+        <p>Whenever you have a need to create a dynamic proxy, you may use an implementation of the
+        <a href="apidocs/com/thoughtworks/proxy/ProxyFactory.html">ProxyFactory</a> instead depending
+        directly on the proxy provided by the reflection API of the JDK.</p>
 
-  
+        <p>ProxyToys comes with two implementations of such a factory, one based on the reflection API
+        of the JDK itself and the other one based on CGLIB. Each implementation has its own limitations and
+        you might switch the proxy factory depending on the runtime environment as explained in the
+        <a href="faq.html#Compatibility_CGLIB">FAQ</a>.</p>
+
+        <p class="highlight">Always depend on
+        <a href="apidocs/com/thoughtworks/proxy/ProxyFactory.html">ProxyFactory</a> and select the
+        implementation of your choice.</p>
+
+        <p>Other bytecode manipulation libraries may be used to implement alternative ProxyFactory
+        implementations as long as they can support or be used to build a compatible
+        <a href="apidocs/com/thoughtworks/proxy/Invoker.html">invoker interface</a>.</p>
+
+
+        <!-- ************ -->
+
+        <h1 id="toys">Toys</h1>
+
+		<p>The toys exist as solutions for common problems solved with proxy instances. Some are build on
+		top of another and you may derive your own specialized solution based on a available toy implementation.
+		Each toy has a builder as proxy factory, that can be invoked to create a proxy for a single or for multiple
+		types with a special assignment. the <a href="apidocs/com/thoughtworks/proxy/toys/pool/Pool.html">Pool</a>
+		supports additionally normal constructors, because it is a normal object <em>using</em> proxies.</p>
+		
+		<p>Each toys utilizes a special implementation of an 
+		<a href="apidocs/com/thoughtworks/proxy/Invoker.html">Invoker</a>, that is called for each method 
+		invocation. In most toy implementations each proxy has its own Invoker instance. For very specialized
+		proxies, you might use a different strategy though.</p>
+
+    
 
                 <br/><br/>
                 
@@ -74,7 +94,7 @@ DAMAGE.
                                 <li><a href="index.html">About ProxyToys</a></li>
                                 <li><a href="news.html">News</a></li>
                                 <li><a href="changes.html">Change History</a></li>
-                                <li class="currentLink">License</li>
+                                <li><a href="license.html">License</a></li>
                                 <li><a href="download.html">Download</a></li>
                                 <li><a href="versioning.html">About Versioning</a></li>
                     </ul>
@@ -95,7 +115,7 @@ DAMAGE.
                 <div class="MenuGroup">
                     <h1>Developing ProxyToys</h1>
                     <ul>
-                                <li><a href="architecture.html">Architecture Overview</a></li>
+                                <li class="currentLink">Architecture Overview</li>
                                 <li><a href="how-to-contribute.html">How to Contribute</a></li>
                                 <li><a href="team.html">Development Team</a></li>
                                 <li><a href="repository.html">Source Repository</a></li>
