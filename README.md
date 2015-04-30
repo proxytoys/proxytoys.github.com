@@ -18,10 +18,12 @@ To create an update of the site, you have to edit the sources in the ProxyToys r
 the same base directory.
 0. Edit the sources in proxytoys.git/proxytoys/website/src/site/content
 0. From the root of proxytoys.git call
+
 		mvn clean package
+		
 0. Update the repository with the GitHub pages.
 
-	rsync -cr --progress --delete --exclude=.nojekyll --exclude=.git* --exclude=*.md --exclude=jira --exclude=apidocs ./website/target/xsite/ ../proxytoys.io/
+		rsync -cr --progress --delete --exclude=.nojekyll --exclude=.git* --exclude=*.md --exclude=jira --exclude=apidocs ./website/target/xsite/ ../proxytoys.io/
  	 
 ## After Release
  
