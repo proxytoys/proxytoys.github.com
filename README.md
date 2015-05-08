@@ -16,7 +16,7 @@ To create an update of the site, you have to edit the sources in the ProxyToys r
 0. Create a clone of the current repository
 0. Create a clone of the [proxytoys Git repository](https://github.com/proxytoys/proxytoys) using
 the same base directory.
-0. Edit the sources in proxytoys.git/proxytoys/website/src/site/content
+0. Edit the sources in proxytoys.git/website/src/site/content
 0. From the root of proxytoys.git call
 
 		mvn clean package
