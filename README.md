@@ -1,6 +1,6 @@
 # ProxyToys Documentation
 
-This repository contains the GitHub pages for [ProxyToys](https://github.com/proxytoys/proxytoys)
+This repository contains the [GitHub pages for ProxyToys](https://github.com/proxytoys/proxytoys)
 that are used to render automatically the static [website of ProxyToys](https://proxytoys.github.io/). 
 
 # Site Generation
