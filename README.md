@@ -8,7 +8,7 @@ that are used to render automatically the static [website of ProxyToys](https://
 The content of this repository is generated. ProxyToys uses Maven and XSite to generate the pages.
 To create an update of the site, you have to edit the sources in the ProxyToys repository.
  
-## Requisites
+## Prerequisites
 + Java 5 runtime
 + Maven 3.0
  
